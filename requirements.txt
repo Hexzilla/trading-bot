@@ -1,0 +1,5 @@
+tda-api==1.6.0
+flask==2.2.3
+selenium==4.8.3
+pyopenssl
+from-root
