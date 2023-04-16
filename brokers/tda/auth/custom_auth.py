@@ -1,6 +1,5 @@
 ##########################################################################
 # Authentication Wrappers
-import datetime
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client, OAuth2Client
 from from_root import from_root
@@ -12,13 +11,10 @@ import os
 import pickle
 import sys
 import time
-import warnings
 
 from tda.client import AsyncClient, Client
 from tda.debug import register_redactions
 from tda.utils import LazyLog
-
-from db import db_auth
 
 TOKEN_ENDPOINT = 'https://api.tdameritrade.com/v1/oauth2/token'
 
@@ -81,8 +77,8 @@ def client_from_token_file(token_path, api_key, asyncio=False, enforce_enums=Tru
 
     :param token_path: Path to an existing token. Updated tokens will be written
                        to this path. If you do not yet have a token, use
-                       :func:`~tda.auth.client_from_login_flow` or
-                       :func:`~tda.auth.easy_client` to create one.
+                       :func:`~td-ameritrade.auth.client_from_login_flow` or
+                       :func:`~td-ameritrade.auth.easy_client` to create one.
     :param api_key: Your TD Ameritrade application's API key, also known as the
                     client ID.
     :param asyncio: If set to ``True``, this will enable async support allowing
@@ -103,7 +99,7 @@ def client_from_token_file(token_path, api_key, asyncio=False, enforce_enums=Tru
 
 def get_token_path(api_key):
     api_key = normalize_api_key(api_key)
-    return str(from_root()) + '/auth/tokens/' + api_key + '_token.json'
+    return str(from_root()) + '/brokers/tda/auth/tokens/' + api_key + '_token.json'
 
 
 def fetch_and_register_token_from_redirect(
@@ -396,7 +392,7 @@ def client_from_manual_flow(api_key, redirect_url, token_path,
         'https://auth.tdameritrade.com/auth')
 
     print('\n**************************************************************\n')
-    print('This is the manual login and token creation flow for tda-api.')
+    print('This is the manual login and token creation flow for td-ameritrade-api.')
     print('Please follow these instructions exactly:')
     print()
     print(' 1. Open the following link by copy-pasting it into the browser')
@@ -455,7 +451,7 @@ def easy_client(api_key, redirect_uri, token_path, webdriver_func=None,
                        If this file exists, this method will assume it's valid
                        and will attempt to parse it as a token. If it does not,
                        this method will create a new one using
-                       :func:`~tda.auth.client_from_login_flow`. Updated tokens
+                       :func:`~td-ameritrade.auth.client_from_login_flow`. Updated tokens
                        will be written to this path as well.
     :param webdriver_func: Function that returns a webdriver for use in fetching
                            a new token. Will only be called if the token file

@@ -1,17 +1,22 @@
+import datetime
+import logging
+import os
 from urllib.parse import urlparse
+
+from authlib.integrations.httpx_client import OAuth2Client
 from flask import Flask, redirect, request, abort
-from auth.custom_auth import *
-from auth.custom_auth import normalize_api_key
-from db import db_auth
+from brokers.tda.auth.custom_auth import fetch_and_register_token_from_redirect, get_token_path, normalize_api_key
+from brokers.tda.db import db_auth
 
 API_ENDPOINT = 'https://api.tdameritrade.com'
 AUTH_ENDPOINT = 'https://auth.tdameritrade.com/auth'
 REFERER_URL = 'https://auth.tdameritrade.com/'
-REDIRECT_URL = 'https://localhost/fetch_authorization_code'
-AUTHORIZE_URL = 'https://localhost/authorize?api_key=<TDA API KEY>'
+REDIRECT_URL = 'https://localhost:8443/fetch_authorization_code'
+AUTHORIZE_URL = 'https://localhost/authorize?api_key=TDA_API_KEY'
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(5)
+app.config['SECRET_KEY'] = os.urandom(52)
+
 
 logins = None
 with app.app_context():
