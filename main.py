@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from core.engine import Engine
+from core.engine.engine import Engine
 from logging_config import config
 
 if __name__ == '__main__':
