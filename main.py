@@ -11,6 +11,6 @@ if __name__ == '__main__':
     logger.info('Application started!')
 
     engine = Engine()
-    asyncio.run(engine.start())
+    engine.start()
 
     logger.info('Application finished!')
