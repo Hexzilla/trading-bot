@@ -41,7 +41,9 @@ class TdaOrderProcessor(OrderProcessor):
         tda_client.cancel_order(order_id, account_id)
 
     def get_order(self, account_id: str, order_id: str):
-        pass
+        tda_client: Client = self.broker_client._get_client()
+        return tda_client.get_order(order_id, account_id)
 
     def get_orders(self, account_id: str = None):
-        pass
+        tda_client: Client = self.broker_client._get_client()
+        return tda_client.get_orders_by_path(account_id)
