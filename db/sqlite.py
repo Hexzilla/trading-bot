@@ -1,6 +1,7 @@
 import sqlite3
 from sqlite3 import Error
-from from_root import from_root, from_here
+
+from from_root import from_root
 
 DB_FILE = str(from_root()) + '/db/sqlite3.db'
 

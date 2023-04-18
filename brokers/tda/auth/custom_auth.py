@@ -1,10 +1,6 @@
 ##########################################################################
 # Authentication Wrappers
 
-from authlib.integrations.httpx_client import AsyncOAuth2Client, OAuth2Client
-from from_root import from_root
-from prompt_toolkit import prompt
-
 import json
 import logging
 import os
@@ -12,6 +8,9 @@ import pickle
 import sys
 import time
 
+from authlib.integrations.httpx_client import AsyncOAuth2Client, OAuth2Client
+from from_root import from_root
+from prompt_toolkit import prompt
 from tda.client import AsyncClient, Client
 from tda.debug import register_redactions
 from tda.utils import LazyLog

@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 
 from authlib.integrations.httpx_client import OAuth2Client
 from flask import Flask, redirect, request, abort
+
 from brokers.tda.auth.custom_auth import fetch_and_register_token_from_redirect, get_token_path, normalize_api_key
 from brokers.tda.db import db_auth
 

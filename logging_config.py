@@ -18,5 +18,5 @@ def __get_file_handler():
     return file_handler
 
 
-def config():
-    logging.basicConfig(handlers=[__get_console_handler(), __get_file_handler()], level=logging.DEBUG)
+def config_logger():
+    logging.basicConfig(handlers=[__get_console_handler(), __get_file_handler()], level=logging.WARNING)

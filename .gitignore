@@ -26,3 +26,4 @@ __pycache__
 venv
 tokens
 logs/**
+/logs/
