@@ -1,4 +1,3 @@
-from core.algorithms import BaseAlgo
 from core.signal_type import SignalType
 
 

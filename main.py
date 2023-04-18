@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-import signal
 import time
 
 from brokers.tda.broker_client import BrokerClient
