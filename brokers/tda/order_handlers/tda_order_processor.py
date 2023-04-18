@@ -34,7 +34,23 @@ class TdaOrderProcessor(OrderProcessor):
             tda_client.place_order(account_id, order_spec)
 
     def replace_order(self, account_id: str, order_id: str):
-        pass
+        order = self.get_order(account_id, order_id)
+        if order is None: return
+
+        tda_client: Client = self.broker_client._get_client()
+        order_type = 'buy'
+        shares = 1
+        ticker = ''
+
+        if order_type == 'buy':
+            order_spec = equity_buy_market(ticker, shares).set_session(
+                Session.NORMAL).set_duration(Duration.DAY).build()
+            tda_client.replace_order(account_id, order_id, order_spec)
+
+        if order_type == 'sell':
+            order_spec = equity_sell_market(ticker, shares).set_session(
+                Session.NORMAL).set_duration(Duration.DAY).build()
+            tda_client.replace_order(account_id, order_id, order_spec)
 
     def cancel_order(self, account_id: str, order_id: str):
         tda_client: Client = self.broker_client._get_client()
