@@ -7,6 +7,7 @@ from tda.orders.equities import equity_buy_market, equity_sell_market
 from brokers.tda.broker_client import BrokerClient
 from core.order_handlers.order_processor import OrderProcessor
 from core.signal import Signal
+from core.signal_type import SignalType
 
 
 class TdaOrderProcessor(OrderProcessor):
@@ -16,20 +17,26 @@ class TdaOrderProcessor(OrderProcessor):
 
     def handle_signal(self, signal: Signal):
         self.logger.warning('Caught algo signal: ' + signal.__str__())
+        if signal.signal_type == SignalType.LE:
+            # self.place_order('account_id', 'buy', signal.data.symbol)
+            pass
+        elif signal.signal_type == SignalType.SE:
+            # self.place_order('account_id', 'sell', signal.data.symbol)
+            pass
 
-    def place_order(self, account_id: str, ticker: str):
+    def place_order(self, account_id: str, order_type: str, ticker: str):
         tda_client: Client = self.broker_client._get_client()
 
-        order_type = 'buy'
-        shares = 1
+        # order_type = 'buy'
+        quantity = 1
 
         if order_type == 'buy':
-            order_spec = equity_buy_market(ticker, shares).set_session(
+            order_spec = equity_buy_market(ticker, quantity).set_session(
                 Session.NORMAL).set_duration(Duration.DAY).build()
             tda_client.place_order(account_id, order_spec)
 
         if order_type == 'sell':
-            order_spec = equity_sell_market(ticker, shares).set_session(
+            order_spec = equity_sell_market(ticker, quantity).set_session(
                 Session.NORMAL).set_duration(Duration.DAY).build()
             tda_client.place_order(account_id, order_spec)
 
