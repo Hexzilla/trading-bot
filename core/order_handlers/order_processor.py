@@ -9,7 +9,7 @@ class OrderProcessor(SignalListener, ABC):
         self.broker_client = broker_client
 
     @abstractmethod
-    def place_order(self, account_id: str, ticker: str):
+    def place_order(self, account_id: str, order_type: str, ticker: str):
         pass
 
     @abstractmethod
