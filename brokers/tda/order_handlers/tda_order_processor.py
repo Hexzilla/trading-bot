@@ -14,6 +14,9 @@ class TdaOrderProcessor(OrderProcessor):
     def __init__(self, broker_client: BrokerClient):
         super().__init__(broker_client)
         self.logger = logging.getLogger(__name__)
+        
+    def get_client(self) -> Client:
+        return self.get_client()
 
     def handle_signal(self, signal: Signal):
         self.logger.warning('Caught algo signal: ' + signal.__str__())
@@ -27,7 +30,7 @@ class TdaOrderProcessor(OrderProcessor):
             pass
 
     def get_account_id(self):
-        tda_client: Client = self.broker_client._get_client()
+        tda_client: Client = self.get_client()
 
         response = tda_client.get_accounts(fields=[tda_client.Account.Fields.POSITIONS])
         if response.status_code == 200:
@@ -39,7 +42,7 @@ class TdaOrderProcessor(OrderProcessor):
         return None
 
     def place_order(self, account_id: str, order_type: str, ticker: str):
-        tda_client: Client = self.broker_client._get_client()
+        tda_client: Client = self.get_client()
 
         # order_type = 'buy'
         quantity = 10000000
@@ -60,7 +63,7 @@ class TdaOrderProcessor(OrderProcessor):
         order = self.get_order(account_id, order_id)
         if order is None: return
 
-        tda_client: Client = self.broker_client._get_client()
+        tda_client: Client = self.get_client()
         order_type = 'buy'
         shares = 1
         ticker = ''
@@ -76,13 +79,13 @@ class TdaOrderProcessor(OrderProcessor):
             tda_client.replace_order(account_id, order_id, order_spec)
 
     def cancel_order(self, account_id: str, order_id: str):
-        tda_client: Client = self.broker_client._get_client()
+        tda_client: Client = self.get_client()
         tda_client.cancel_order(order_id, account_id)
 
     def get_order(self, account_id: str, order_id: str):
-        tda_client: Client = self.broker_client._get_client()
+        tda_client: Client = self.get_client()
         return tda_client.get_order(order_id, account_id)
 
     def get_orders(self, account_id: str = None):
-        tda_client: Client = self.broker_client._get_client()
+        tda_client: Client = self.get_client()
         return tda_client.get_orders_by_path(account_id)
