@@ -18,10 +18,10 @@ class TdaOrderProcessor(OrderProcessor):
     def handle_signal(self, signal: Signal):
         self.logger.warning('Caught algo signal: ' + signal.__str__())
         if signal.signal_type == SignalType.LE:
-            # self.place_order('account_id', 'buy', signal.data.symbol)
+            self.place_order('account_id', 'buy', signal.data.symbol)
             pass
         elif signal.signal_type == SignalType.SE:
-            # self.place_order('account_id', 'sell', signal.data.symbol)
+            self.place_order('account_id', 'sell', signal.data.symbol)
             pass
 
     def place_order(self, account_id: str, order_type: str, ticker: str):
