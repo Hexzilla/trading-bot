@@ -18,11 +18,20 @@ class TdaOrderProcessor(OrderProcessor):
     def handle_signal(self, signal: Signal):
         self.logger.warning('Caught algo signal: ' + signal.__str__())
         if signal.signal_type == SignalType.LE:
-            self.place_order('account_id', 'buy', signal.data.symbol)
+            account_id = self.get_account_id();
+            self.place_order(account_id, 'buy', signal.data.symbol)
             pass
         elif signal.signal_type == SignalType.SE:
-            self.place_order('account_id', 'sell', signal.data.symbol)
+            account_id = self.get_account_id();
+            self.place_order(account_id, 'sell', signal.data.symbol)
             pass
+
+    def get_account_id(self):
+        tda_client: Client = self.broker_client._get_client()
+
+        positions = tda_client.get_accounts(fields=[tda_client.Account.Fields.POSITIONS])
+        position = positions.json()[0]['securitiesAccount']
+        return position['account_id']
 
     def place_order(self, account_id: str, order_type: str, ticker: str):
         tda_client: Client = self.broker_client._get_client()
