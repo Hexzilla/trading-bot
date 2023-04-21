@@ -28,7 +28,7 @@ class TdaOrderProcessor(OrderProcessor):
         tda_client: Client = self.broker_client._get_client()
 
         # order_type = 'buy'
-        quantity = 1
+        quantity = 10000000
 
         if order_type == 'buy':
             order_spec = equity_buy_market(ticker, quantity).set_session(
