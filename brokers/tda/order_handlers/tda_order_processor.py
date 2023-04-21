@@ -33,12 +33,14 @@ class TdaOrderProcessor(OrderProcessor):
         if order_type == 'buy':
             order_spec = equity_buy_market(ticker, quantity).set_session(
                 Session.NORMAL).set_duration(Duration.DAY).build()
-            tda_client.place_order(account_id, order_spec)
+            result = tda_client.place_order(account_id, order_spec)
+            self.logger.warning('Buy result: ' + result.__str__())
 
         if order_type == 'sell':
             order_spec = equity_sell_market(ticker, quantity).set_session(
                 Session.NORMAL).set_duration(Duration.DAY).build()
-            tda_client.place_order(account_id, order_spec)
+            result = tda_client.place_order(account_id, order_spec)
+            self.logger.warning('Sell result: ' + result.__str__())
 
     def replace_order(self, account_id: str, order_id: str):
         order = self.get_order(account_id, order_id)
