@@ -8,14 +8,19 @@ from core.broker_client import BaseBrokerClient
 class BrokerClient(BaseBrokerClient):
     def __init__(self, api_key):
         BaseBrokerClient.__init__(self, api_key)
+        self.client = None
 
-    def _get_client(self):
+    def _get_client(self) -> Client:
+        if self.client is not None:
+            return self.client
+
         token_path = get_token_path(self.api_key)
         if os.path.isfile(token_path):
             # Decrypt the API_KEY_HERE
             client = client_from_token_file(token_path, self.api_key, asyncio=False, enforce_enums=True)
             get_logger().info('Returning client loaded from token file \'%s\'', token_path)
 
+            self.client = client
             return client
 
     def get_quotes(self, tickers) -> DataFrame:
