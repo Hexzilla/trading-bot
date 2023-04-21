@@ -16,7 +16,7 @@ class TdaOrderProcessor(OrderProcessor):
         self.logger = logging.getLogger(__name__)
         
     def get_client(self) -> Client:
-        return self.get_client()
+        return self.broker_client._get_client()
 
     def handle_signal(self, signal: Signal):
         self.logger.warning('Caught algo signal: ' + signal.__str__())
