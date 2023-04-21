@@ -41,10 +41,15 @@ class TdaOrderProcessor(OrderProcessor):
             self.logger.error('Can not get account_id')
             return
 
+        orders = self.get_orders(account_id)
+        self.logger.warning('orders: ' + orders.__str__())
+
+        """
         if signal.signal_type == SignalType.LE:
             self.place_order(account_id, 'buy', signal.data.symbol)
         elif signal.signal_type == SignalType.SE:
             self.place_order(account_id, 'sell', signal.data.symbol)
+        """
 
     def place_order(self, account_id: str, order_type: str, ticker: str):
         tda_client: Client = self.get_client()
