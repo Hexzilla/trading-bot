@@ -19,19 +19,6 @@ class TdaOrderProcessor(OrderProcessor):
     def get_client(self) -> Client:
         return self.broker_client._get_client()
 
-    def handle_signal(self, signal: Signal):
-        self.logger.warning('Caught algo signal: ' + signal.__str__())
-
-        account_id = self.get_account_id()
-        if account_id is None:
-            self.logger.error('Can not get account_id')
-            return
-
-        if signal.signal_type == SignalType.LE:
-            self.place_order(account_id, 'buy', signal.data.symbol)
-        elif signal.signal_type == SignalType.SE:
-            self.place_order(account_id, 'sell', signal.data.symbol)
-
     def get_account_id(self):
         if self.account_id:
             return self.account_id
@@ -46,11 +33,24 @@ class TdaOrderProcessor(OrderProcessor):
 
         return self.account_id
 
+    def handle_signal(self, signal: Signal):
+        self.logger.warning('Caught algo signal: ' + signal.__str__())
+
+        account_id = self.get_account_id()
+        if account_id is None:
+            self.logger.error('Can not get account_id')
+            return
+
+        if signal.signal_type == SignalType.LE:
+            self.place_order(account_id, 'buy', signal.data.symbol)
+        elif signal.signal_type == SignalType.SE:
+            self.place_order(account_id, 'sell', signal.data.symbol)
+
     def place_order(self, account_id: str, order_type: str, ticker: str):
         tda_client: Client = self.get_client()
 
         # order_type = 'buy'
-        quantity = 10000000
+        quantity = 100000000000
 
         if order_type == 'buy':
             order_spec = equity_buy_market(ticker, quantity).set_session(
