@@ -1,4 +1,4 @@
-from core.signal_type import SignalType
+from core.common.signal_type import SignalType
 
 
 class Signal:
@@ -8,6 +8,6 @@ class Signal:
         self.data = data
 
     def __str__(self):
-        return 'Signal type: ' + str(self.signal_type.value) + \
+        return '\nSignal type: ' + str(self.signal_type.value) + \
                ' - Algo: ' + self.algo_name + \
-               ' - Data: ' + str(self.data)
+               ' - Data: ' + str(self.data) + '\n'

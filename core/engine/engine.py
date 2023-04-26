@@ -3,41 +3,63 @@ import logging
 from abc import ABC
 from typing import final
 
-from core.algorithms import BaseAlgo
-from core.data_queue import DataQueue
+from core.broker_client import BrokerClient
+from core.common.chart_settings import ChartSettings
+from core.common.data_set import DataSet
+from core.common.start_mode import StartMode
+from core.config import start_mode, data_polling_interval_in_milliseconds
+from core.data_services.bar_data_service import BarDataService
+from core.data_services.option_chain_data_service import OptionChainDataService
+from core.data_services.quote_data_service import QuoteDataService
 from core.engine import BaseEngine
-from core.signal_listener import SignalListener
 
 
 @final
 class Engine(BaseEngine, ABC):
-    def __init__(self,
-                 data_queue: DataQueue,
-                 algorithm_list: list[BaseAlgo],
-                 signal_listener_list: list[SignalListener]):
+    def __init__(self, tickers: list[str], proxy_broker_client: BrokerClient, chart_settings: ChartSettings,
+                 algorithm_list: list[any]):
         self.logger = logging.getLogger(__name__)
-        self.data_queue: DataQueue = data_queue
-        self.algorithm_list: list[BaseAlgo] = algorithm_list
-        self.signal_listener_list: list[SignalListener] = signal_listener_list
+        self.start_mode = start_mode
+
+        self.tickers = tickers
+        self.proxy_broker_client = proxy_broker_client
+        self.chart_settings = chart_settings
+        self.algorithm_list: list[any] = algorithm_list
+
+        if self.start_mode == StartMode.PULLING:
+            self.quote_data_service: QuoteDataService = QuoteDataService(self.proxy_broker_client, self.tickers)
+            self.option_chain_data_service: OptionChainDataService = OptionChainDataService(self.proxy_broker_client,
+                                                                                            self.tickers)
+        else:
+            self.streamingService = None
+
+        self.bar_data_service = BarDataService(self.proxy_broker_client, self.tickers, self.chart_settings)
 
     async def start(self):
         self.logger.info('Engine has started!')
         try:
             tasks = set()
-
             tasks.add(asyncio.create_task(self._run_data_collector()))
             tasks.add(asyncio.create_task(self._run_data_processor()))
 
             await asyncio.gather(*tasks)
-        except Exception as e:
-            self.logger.error('Engine was terminated with error: ' + str(e))
         finally:
             self.logger.info('Engine has finished!')
 
     async def _run_data_collector(self):
         self.logger.info('Data collector has started!')
         try:
-            await asyncio.create_task(self.data_queue.acquire_latest_data())
+            tasks = set()
+            #tasks.add(asyncio.create_task(self.bar_data_service.run(self.chart_settings.frequency * 60 * 1000)))
+
+            # Pulling mode
+            if self.start_mode == StartMode.PULLING:
+                tasks.add(asyncio.create_task(self.quote_data_service.run(data_polling_interval_in_milliseconds)))
+                # tasks.add(asyncio.create_task(self.option_chain_data_service.run(data_polling_interval_in_milliseconds)))
+            else:  # Pushing mode
+                tasks.add(asyncio.create_task(self.streaming_data_service.start()))
+
+            await asyncio.gather(*tasks)
         except asyncio.CancelledError:
             self.logger.warning('Data collector was interrupted by user!')
         finally:
@@ -47,19 +69,31 @@ class Engine(BaseEngine, ABC):
         self.logger.info('Data processor has started!')
         try:
             async def process():
+                last_quote_update_time = None
+                last_option_chain_update_time = None
+                last_bar_update_time = None
+
                 while True:
                     # Get data from queue
-                    data_set_list = await self.data_queue.get_latest_data()
+                    is_quote_updated = last_quote_update_time != self.quote_data_service.last_update_time
+                    is_option_chain_updated = last_option_chain_update_time != self.option_chain_data_service.last_update_time
+                    is_bar_updated = last_bar_update_time != self.bar_data_service.last_update_time
 
-                    for data_set in data_set_list:
+                    data_set = DataSet()
+                    if is_quote_updated:
+                        data_set.quotes = self.quote_data_service.latest_data
+
+                    if is_option_chain_updated:
+                        data_set.option_chains = self.option_chain_data_service.latest_data
+
+                    if is_bar_updated:
+                        data_set.bars = self.bar_data_service.latest_data
+
+                    if data_set.has_data():
                         # Pass the data set to the algo to process
-                        for algorithm in self.algorithm_list:
-                            signal_generator = algorithm.process(data_set)
+                        self.notify(data_set)
 
-                            # Notify the signal listener
-                            for signal in signal_generator:
-                                for signal_listener in self.signal_listener_list:
-                                    signal_listener.handle_signal(signal)
+                    await asyncio.sleep(0.1)
 
             await asyncio.create_task(process())
         except asyncio.CancelledError:

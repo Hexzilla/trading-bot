@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
 from brokers.tda.broker_client import BrokerClient
-from core.signal_listener import SignalListener
+from core.common.observer import Observer
 
 
-class OrderProcessor(SignalListener, ABC):
+class OrderProcessor(Observer, ABC):
     def __init__(self, broker_client: BrokerClient):
         self.broker_client = broker_client
 

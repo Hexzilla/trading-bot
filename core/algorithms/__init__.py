@@ -1,9 +1,8 @@
-from abc import abstractmethod
+from abc import ABC
 
-from core.data_set import DataSet
+from core.common.observer import Observer
+from core.common.subject import Subject
 
 
-class BaseAlgo:
-    @abstractmethod
-    async def process(self, data_set: DataSet):
-        yield
+class Algo(Subject, Observer, ABC):
+    pass
