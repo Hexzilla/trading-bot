@@ -39,7 +39,7 @@ class BrokerClient(BrokerClient):
         for ticker in tickers:
             response = self.tda_client.get_option_chains(ticker, strike_count=2, days_to_expiration=1,
                                                          to_date=datetime.datetime.now(pytz.timezone('US/Eastern')) +
-                                                                datetime.timedelta(days=2))
+                                                                 datetime.timedelta(days=2))
             assert response.status_code == 200, response.raise_for_status()
             pprint(response.json())
             yield DataFrame.from_dict(response.json())
