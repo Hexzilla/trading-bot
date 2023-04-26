@@ -10,7 +10,7 @@ class BrokerClient(Subject):
     def __init__(self, api_key):
         self.api_key = api_key
 
-    def get_client(self) -> object:
+    def get_client(self) -> Client:
         pass
 
     @abstractmethod
