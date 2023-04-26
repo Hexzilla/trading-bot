@@ -15,15 +15,12 @@ class TdaOrderProcessor(OrderProcessor, ABC):
         self.logger = logging.getLogger(__name__)
         self.tda_client = self.broker_client.get_client()
         self.account_id = None
-        
-    def get_client(self) -> Client:
-        return self.broker_client._get_client()
 
     def get_account_id(self):
         if self.account_id:
             return self.account_id
 
-        response = tda_client.get_accounts(fields=[self.tda_client.Account.Fields.POSITIONS])
+        response = self.tda_client.get_accounts(fields=[self.tda_client.Account.Fields.POSITIONS])
         if response.status_code == 200:
             positions = response.json()
             if len(positions) > 0:
@@ -86,9 +83,6 @@ class TdaOrderProcessor(OrderProcessor, ABC):
             self.tda_client.replace_order(account_id, order_id, order_spec)
 
     def cancel_order(self, account_id: str, order_id: str):
-        self.tda_client.cancel_order(order_id, account_id)
-
-    def get_orders(self, account_id: str = None):
         self.tda_client.cancel_order(order_id, account_id)
 
     def get_order(self, account_id: str, order_id: str):

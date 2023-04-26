@@ -28,6 +28,7 @@ def __update_token(token_path):
 
         with open(token_path, 'w') as f:
             json.dump(t, f)
+
     return update_token
 
 
@@ -44,6 +45,7 @@ def __token_loader(token_path):
                     'Unable to load JSON token from file %s, ' +
                     'falling back to pickle', token_path)
                 return pickle.loads(token_data)
+
     return load_token
 
 
@@ -54,8 +56,8 @@ def normalize_api_key(api_key):
         key_split = api_key.split('@')
         if len(key_split) != 1:
             get_logger().warning(
-                    'API key ends in nonstandard suffix "%s". Ignoring',
-                        LazyLog(lambda: '@'.join(key_split[1:])))
+                'API key ends in nonstandard suffix "%s". Ignoring',
+                LazyLog(lambda: '@'.join(key_split[1:])))
             api_key = key_split[0]
 
         get_logger().info('Appending %s to API key', api_key_suffix)
@@ -130,6 +132,7 @@ def fetch_and_register_token_from_redirect(
     if asyncio:
         async def oauth_client_update_token(t, *args, **kwargs):
             update_token(t, *args, **kwargs)  # pragma: no cover
+
         session_class = AsyncOAuth2Client
         client_class = AsyncClient
     else:
@@ -156,6 +159,7 @@ class TokenMetadata:
     Provides the functionality required to maintain and update our view of the
     token's metadata.
     '''
+
     # XXX: Token metadata is currently not considered sensitive enough to wrap
     #      register for redactions. If we add anything sensitive to the token
     #      metadata, we'll need to update the redaction registration logic.
@@ -179,8 +183,8 @@ class TokenMetadata:
         logger = get_logger()
         if cls.is_metadata_aware_token(token):
             logger.info(
-                    'Loaded metadata aware token with creation timestamp %s',
-                    token['creation_timestamp'])
+                'Loaded metadata aware token with creation timestamp %s',
+                token['creation_timestamp'])
             return TokenMetadata(
                 token['creation_timestamp'], unwrapped_token_write_func)
         elif cls.is_legacy_token(token):
@@ -203,9 +207,11 @@ class TokenMetadata:
         Hook the call to the token write function so that the write function is
         passed the metadata-aware version of the token.
         '''
+
         def wrapped_token_write_func(token, *args, **kwargs):
             return self.unwrapped_token_write_func(
                 self.wrap_token_in_metadata(token), *args, **kwargs)
+
         return wrapped_token_write_func
 
     def wrap_token_in_metadata(self, token):
@@ -233,11 +239,11 @@ class TokenMetadata:
         now = int(time.time())
 
         logger.info(
-            'Updating refresh token:\n'+
-            ' - Current timestamp is %s\n'+
-            ' - Token creation timestamp is %s\n'+
+            'Updating refresh token:\n' +
+            ' - Current timestamp is %s\n' +
+            ' - Token creation timestamp is %s\n' +
             ' - Update interval is %s seconds',
-                now, self.creation_timestamp, update_interval_seconds)
+            now, self.creation_timestamp, update_interval_seconds)
 
         if not (self.creation_timestamp is None
                 or now - self.creation_timestamp >
@@ -304,7 +310,7 @@ def client_from_login_flow(webdriver, api_key, redirect_url, token_path,
                           to avoid errors.
     '''
     get_logger().info('Creating new token with redirect URL \'%s\' ' +
-                       'and token path \'%s\'', redirect_url, token_path)
+                      'and token path \'%s\'', redirect_url, token_path)
 
     api_key = normalize_api_key(api_key)
 
@@ -382,7 +388,7 @@ def client_from_manual_flow(api_key, redirect_url, token_path,
                           to avoid errors.
     '''
     get_logger().info('Creating new token with redirect URL \'%s\' ' +
-                       'and token path \'%s\'', redirect_url, token_path)
+                      'and token path \'%s\'', redirect_url, token_path)
 
     api_key = normalize_api_key(api_key)
 
@@ -469,7 +475,7 @@ def easy_client(api_key, redirect_uri, token_path, webdriver_func=None,
         c = client_from_token_file(token_path, api_key, asyncio=asyncio,
                                    enforce_enums=enforce_enums)
         logger.info(
-                'Returning client loaded from token file \'%s\'', token_path)
+            'Returning client loaded from token file \'%s\'', token_path)
         return c
     else:
         logger.warning('Failed to find token file \'%s\'', token_path)
@@ -543,6 +549,7 @@ def client_from_access_functions(api_key, token_read_func,
     if asyncio:
         async def oauth_client_update_token(t, *args, **kwargs):
             wrapped_token_write_func(t, *args, **kwargs)  # pragma: no cover
+
         session_class = AsyncOAuth2Client
         client_class = AsyncClient
     else:
@@ -553,7 +560,7 @@ def client_from_access_functions(api_key, token_read_func,
     return client_class(
         api_key,
         session_class(api_key,
-            token=token,
-            token_endpoint=TOKEN_ENDPOINT,
-            update_token=oauth_client_update_token),
+                      token=token,
+                      token_endpoint=TOKEN_ENDPOINT,
+                      update_token=oauth_client_update_token),
         token_metadata=metadata, enforce_enums=enforce_enums)

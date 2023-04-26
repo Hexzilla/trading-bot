@@ -18,7 +18,6 @@ AUTHORIZE_URL = 'https://localhost/authorize?api_key=TDA_API_KEY'
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(52)
 
-
 logins = None
 with app.app_context():
     db_auth.delete_all()
