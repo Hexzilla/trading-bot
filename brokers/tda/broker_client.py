@@ -17,7 +17,6 @@ class BrokerClient(BrokerClient):
         self.get_client()
 
     def get_client(self):
-
         if self.tda_client is not None:
             return self.tda_client
 
@@ -29,6 +28,15 @@ class BrokerClient(BrokerClient):
 
             self.tda_client = client
             return self.tda_client
+
+    def get_account_id(self):
+        response = self.tda_client.get_accounts(fields=[self.tda_client.Account.Fields.POSITIONS])
+        if response.status_code == 200:
+            positions = response.json()
+            if len(positions) > 0:
+                position = positions[0]['securitiesAccount']
+                return position['accountId']
+        return None
 
     def get_quotes(self, tickers) -> DataFrame:
         response = self.tda_client.get_quotes(tickers)

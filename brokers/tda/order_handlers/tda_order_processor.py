@@ -20,13 +20,7 @@ class TdaOrderProcessor(OrderProcessor, ABC):
         if self.account_id:
             return self.account_id
 
-        response = self.tda_client.get_accounts(fields=[self.tda_client.Account.Fields.POSITIONS])
-        if response.status_code == 200:
-            positions = response.json()
-            if len(positions) > 0:
-                position = positions[0]['securitiesAccount']
-                self.account_id = position['accountId']
-
+        self.account_id = self.tda_client.get_account_id()
         return self.account_id
 
     def update(self, data: any):
