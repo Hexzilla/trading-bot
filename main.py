@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 
+from brokers.tda.db import db_account
 from brokers.tda.broker_client import BrokerClient
 from brokers.tda.order_handlers.tda_order_processor import TdaOrderProcessor
 from core.algorithms.simple_algo import SimpleAlgo
@@ -13,6 +14,16 @@ config_logger()
 logger = logging.getLogger()
 
 loop = asyncio.get_event_loop()
+
+
+def update_account_info(broker_client):
+    account_id = broker_client.get_account_id()
+    if account_id:
+        exist = db_account.select_by_user_id(account_id)
+        if exist:
+            db_account.update_account((account_id, True))
+        else:
+            db_account.insert_account((account_id, True))
 
 
 async def main():
@@ -34,6 +45,15 @@ async def main():
         for tda_api_key in tda_api_keys:
             broker_client = BrokerClient(tda_api_key)
             broker_client_list.append(broker_client)
+
+            # Update account_info table
+            account_id = broker_client.get_account_id()
+            if account_id:
+                exist = db_account.select_by_user_id(account_id)
+                if exist:
+                    db_account.insert_account((account_id, True))
+                else:
+                    db_account.
 
             tda_order_processor = TdaOrderProcessor(broker_client)
             simpleAlgo.subscribe(tda_order_processor)
