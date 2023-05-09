@@ -47,13 +47,7 @@ async def main():
             broker_client_list.append(broker_client)
 
             # Update account_info table
-            account_id = broker_client.get_account_id()
-            if account_id:
-                exist = db_account.select_by_user_id(account_id)
-                if exist:
-                    db_account.insert_account((account_id, True))
-                else:
-                    db_account.
+            update_account_info(broker_client)
 
             tda_order_processor = TdaOrderProcessor(broker_client)
             simpleAlgo.subscribe(tda_order_processor)
