@@ -1,12 +1,12 @@
 from db import sqlite
 
 
-def insert_account(order):
+def insert_account_order(order):
     sql = ''' INSERT INTO account_order_info (user_id, account_balance, date, gains_losses_daily) VALUES(?,?,?,?) '''
     return sqlite.insert(order, sql)
 
 
-def update_account(order):
+def update_account_order(order):
     sql = '''UPDATE account_order_info 
         SET user_id = ?, account_balance = ?, date=?, gains_losses_daily=? 
         WHERE user_id = ?'''
