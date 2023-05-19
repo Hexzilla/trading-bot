@@ -112,6 +112,9 @@ def test_webull(logger):
     #     result = wb.cancel_all_orders()
     #     print(result)
 
+    options = wb.get_options(stock='AAPL', direction='all')
+    print(options)
+
 
 """
 endpoints.py~~
