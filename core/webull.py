@@ -89,16 +89,28 @@ def test_webull(logger):
     # print(orders)
 
     # Place order - buy
-    # result = wb.place_buy_order(stock='AAPL', price=176.0, quant=2)
+    # result = wb.place_buy_order(stock='AAPL', price=171.0, quant=2)
     # print(result)
 
     # Place order - sell
-    result = wb.place_sell_order(stock='AAPL', price=175.82, quant=1)
-    print(result)
+    # result = wb.place_sell_order(stock='AAPL', price=178.82, quant=1)
+    # print(result)
+
+    # Cancel Order
+    # orders = wb.get_current_orders()
+    # if len(orders) > 0:
+    #     order = orders[1]
+    #     result = wb.cancel_order(order['orderId'])
+    #     print(result)
+
+    orders = wb.get_current_orders()
+    if len(orders) > 0:
+        result = wb.cancel_all_orders()
+        print(result)
 
 
 """
-endpoints.py
+endpoints.py~~
     def stock_id(self, stock, region_code):
         return f'{self.base_options_gw_url}/search/pc/tickers?keyword={stock}&pageIndex=1&pageSize=20'
 """
