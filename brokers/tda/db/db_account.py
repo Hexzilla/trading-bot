@@ -7,8 +7,17 @@ def insert_account(account):
 
 
 def update_account(account):
+    account_id = account[0]
     sql = '''UPDATE account_info SET user_id = ?, enabled_user = ? WHERE user_id = ?'''
-    sqlite.update(account, sql)
+    sqlite.update((*account, account_id), sql)
+
+
+def upsert_account(account):
+    exists = select_by_user_id(account[0])
+    if not exists:
+        insert_account(account)
+    else:
+        update_account(account)
 
 
 def select_all():
