@@ -112,8 +112,15 @@ def test_webull(logger):
     #     result = wb.cancel_all_orders()
     #     print(result)
 
-    options = wb.get_options(stock='AAPL', direction='all')
+    options = wb.get_options(stock='AAPL', direction='call')
     print(options)
+
+    if len(options) > 0:
+        option = options[0]
+        item = option['call']
+        result = wb.place_order_option(optionId=item['tickerId'], lmtPrice=90, action='BUY', quant=1)
+        print(result)
+
 
 
 """
