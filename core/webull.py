@@ -84,6 +84,10 @@ def test_webull(logger):
     # Authorize trade, must be done before trade action
     # wb.get_trade_token('123456')
 
+    # Get positions
+    # positions = wb.get_positions()
+    # print(positions)
+
     # Get standing orders
     # orders = wb.get_current_orders()
     # print(orders)
@@ -103,10 +107,10 @@ def test_webull(logger):
     #     result = wb.cancel_order(order['orderId'])
     #     print(result)
 
-    orders = wb.get_current_orders()
-    if len(orders) > 0:
-        result = wb.cancel_all_orders()
-        print(result)
+    # orders = wb.get_current_orders()
+    # if len(orders) > 0:
+    #     result = wb.cancel_all_orders()
+    #     print(result)
 
 
 """
