@@ -9,7 +9,7 @@ from core.algorithms.simple_algo import SimpleAlgo
 from core.config import default_chart_settings
 from core.engine.engine import Engine
 from logging_config import config_logger
-from core.webull import webull_login
+from core.webull import test_webull
 
 config_logger()
 logger = logging.getLogger()
@@ -72,8 +72,10 @@ async def main():
 
         logger.info('Application finished!')
 
+
 async def main_webull():
-    webull_login()
+    test_webull(logger)
+
 
 if __name__ == '__main__':
     try:
