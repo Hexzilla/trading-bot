@@ -20,6 +20,10 @@ class paper_webull_wrapper(paper_webull):
     def account_id(self):
         return self._account_id
 
+    def login_with_email(self, email, password):
+        result = self.login(email, password, 'Windows Chrome', save_token=True)
+        return 'accessToken' in result
+
     def login_with_credentials(self, path=None):
         filename = 'webull_credentials.json'
         if path:
@@ -37,11 +41,6 @@ class paper_webull_wrapper(paper_webull):
         self._uuid = credential_data['uuid']
 
         result = self.refresh_login(save_token=True)
-        return 'accessToken' in result
-
-
-    def login_with_email(self, email, password):
-        result = self.login(email, password, 'Windows Chrome', save_token=True)
         return 'accessToken' in result
 
 
