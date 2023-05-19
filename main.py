@@ -72,12 +72,8 @@ async def main():
 
         logger.info('Application finished!')
 
-
 async def main_webull():
-    email = 'thegreatone150@gmail.com'
-    password = 'Tank2013!'
-    webull_login(email, password)
-
+    webull_login()
 
 if __name__ == '__main__':
     try:
