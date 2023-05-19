@@ -2,7 +2,7 @@ import json
 import os
 import pickle
 from webull import paper_webull
-from brokers.tda.db.db_account import upsert_account
+from brokers.tda.db import db_account, db_account_order
 
 _email = 'thegreatone150@gmail.com'
 _password = 'Tank2013!'
@@ -43,6 +43,20 @@ class paper_webull_wrapper(paper_webull):
         result = self.refresh_login(save_token=True)
         return 'accessToken' in result
 
+    def place_buy_order(self, stock, price, quant):
+        return self.place_order(stock=stock, price=price, action='BUY', quant=quant)
+
+    def place_sell_order(self, stock, price, quant):
+        return self.place_order(stock=stock, price=price, action='SELL', quant=quant)
+
+    def update_current_orders(self):
+        # Get standing orders
+        orders = self.get_current_orders()
+        if len(orders) > 0:
+            for order in orders:
+                # db_account_order.insert_account_order()
+                pass
+
 
 def create_webull():
     wb = paper_webull_wrapper()
@@ -55,7 +69,7 @@ def create_webull():
 
     if result:
         account_id = wb.account_id()
-        upsert_account((str(account_id), True))
+        db_account.upsert_account((str(account_id), True))
         return wb
 
     return None
@@ -71,9 +85,20 @@ def test_webull(logger):
     # wb.get_trade_token('123456')
 
     # Get standing orders
-    orders = wb.get_current_orders()
-    print(orders)
+    # orders = wb.get_current_orders()
+    # print(orders)
 
-    # Place order
-    # result = wb.place_order(stock='AAPL', price=90.0, qty=2)
+    # Place order - buy
+    # result = wb.place_buy_order(stock='AAPL', price=176.0, quant=2)
     # print(result)
+
+    # Place order - sell
+    result = wb.place_sell_order(stock='AAPL', price=175.82, quant=1)
+    print(result)
+
+
+"""
+endpoints.py
+    def stock_id(self, stock, region_code):
+        return f'{self.base_options_gw_url}/search/pc/tickers?keyword={stock}&pageIndex=1&pageSize=20'
+"""
