@@ -2,7 +2,7 @@ import json
 import os
 import pickle
 from webull import paper_webull
-from brokers.tda.db.db_account import insert_account
+from brokers.tda.db.db_account import upsert_account
 
 _email = 'thegreatone150@gmail.com'
 _password = 'Tank2013!'
@@ -55,7 +55,7 @@ def create_webull():
 
     if result:
         account_id = wb.account_id()
-        insert_account((account_id, True))
+        upsert_account((str(account_id), True))
         return wb
 
     return None
@@ -75,5 +75,5 @@ def test_webull(logger):
     print(orders)
 
     # Place order
-    result = wb.place_order(stock='AAPL', price=90.0, qty=2)
-    print(result)
+    # result = wb.place_order(stock='AAPL', price=90.0, qty=2)
+    # print(result)
