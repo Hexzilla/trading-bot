@@ -9,6 +9,7 @@ from core.algorithms.simple_algo import SimpleAlgo
 from core.config import default_chart_settings
 from core.engine.engine import Engine
 from logging_config import config_logger
+from core.webull import webull_login
 
 config_logger()
 logger = logging.getLogger()
@@ -72,8 +73,14 @@ async def main():
         logger.info('Application finished!')
 
 
+async def main_webull():
+    email = 'thegreatone150@gmail.com'
+    password = 'Tank2013!'
+    webull_login(email, password)
+
+
 if __name__ == '__main__':
     try:
-        asyncio.run(main())
+        asyncio.run(main_webull())
     except KeyboardInterrupt:
         logger.warning('User terminated the application!')
