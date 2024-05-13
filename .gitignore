@@ -27,3 +27,5 @@ venv
 tokens
 logs/**
 /logs/
+
+temp
